@@ -1,0 +1,27 @@
+FROM node:16.13.2-alpine
+
+ARG TIMEZONE_CONFIG
+LABEL maintainer="Ricardo Llontop [llontopg.ricardo@gmail.com]"
+LABEL "com.azure.dev.pipelines.agent.handler.node.path"="/usr/local/bin/node"
+
+RUN apk update \
+    && apk add --no-cache yarn=1.22.17-r0 \
+        git \
+        bash \
+        tzdata \
+        curl \
+        busybox=1.34.1-r5 \
+        libcrypto1.1=1.1.1l-r7 \
+        libretls=3.3.4-r3 \
+        libssl1.1=1.1.1l-r7 \
+        ssl_client=1.34.1-r5 \
+        zlib=1.2.11-r3 \
+    && cp /usr/share/zoneinfo/$TIMEZONE_CONFIG /etc/localtime \
+    && echo $TIMEZONE_CONFIG >  /etc/timezone \
+    && rm -rf /var/cache/apk/*
+
+RUN apk add --no-cache --virtual .pipeline-deps readline linux-pam \
+  && apk add bash sudo shadow \
+  && apk del .pipeline-deps
+
+CMD [ "node" ]
