@@ -1,0 +1,10 @@
+FROM alpine:3.15
+ARG TIMEZONE_CONFIG
+LABEL maintainer="Ricardo Llontop [llontopg.ricardo@gmail.com]"
+RUN apk update \
+    apk upgrade \
+    && apk add --no-cache curl=7.80.0-r1 \
+        tzdata \
+    && cp /usr/share/zoneinfo/$TIMEZONE_CONFIG /etc/localtime \
+    && echo $TIMEZONE_CONFIG >  /etc/timezone \
+    && rm -rf /var/cache/apk/*
